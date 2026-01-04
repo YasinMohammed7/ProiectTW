@@ -30,14 +30,14 @@ const googleLoginController = asyncHandler(async (req, res) => {
         console.log('User updated', user);
     }
 
-    const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '10s' });
-    const refreshToken = jwt.sign({ userId: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
+    const accessToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ userId: user._id }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
 
     res.cookie('jwt', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'None',
-        maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     })
 
     res.json({
@@ -79,7 +79,7 @@ const refresh = (req, res) => {
             const accessToken = jwt.sign(
                 { userId: user._id },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '10s' } // sau '15m' pentru producție
+                { expiresIn: '15m' }
             );
 
             res.json({ success: true, message: 'Token refreshed successfully', user: { email: user.email, name: user.name, givenName: user.givenName, familyName: user.familyName, picture: user.picture, lastLogin: user.lastLogin }, accessToken });
