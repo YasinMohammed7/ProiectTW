@@ -82,6 +82,19 @@ const refresh = (req, res) => {
                 { expiresIn: '15m' }
             );
 
+            const refreshToken = jwt.sign(
+                { userId: user._id },
+                process.env.REFRESH_TOKEN_SECRET,
+                { expiresIn: '7d' }
+            );
+
+            res.cookie('jwt', refreshToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'None',
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            })
+
             res.json({ success: true, message: 'Token refreshed successfully', user: { email: user.email, name: user.name, givenName: user.givenName, familyName: user.familyName, picture: user.picture, lastLogin: user.lastLogin }, accessToken });
         })
     );
